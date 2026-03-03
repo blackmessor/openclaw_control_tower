@@ -3,19 +3,15 @@ module.exports = {
     name: 'dashboard',
     script: './index.ts',
     interpreter: 'bun',
-    instances: 1,
+    cwd: '/Users/nicolasgodefroy/openclaw_control_tower',
+    instances: 'max',
     exec_mode: 'fork',
     autorestart: true,
-    watch: ['index.ts', 'public'],
-    ignore_watch: ['node_modules', 'bun.lockb', 'logs'],
+    watch: false,
     max_memory_restart: '1G',
     env: {
       NODE_ENV: 'production',
-    },
-    error_file: './logs/err.log',
-    out_file: './logs/out.log',
-    log_file: './logs/combined.log',
-    time: true,
-    kill_timeout: 5000
+      PORT: 3000
+    }
   }]
 };
