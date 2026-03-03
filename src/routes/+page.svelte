@@ -1,130 +1,17 @@
-<script lang="ts">
-  import { invoke } from "@tauri-apps/api/core";
+&lt;script lang=&quot;ts&quot;&gt;
+  import HealthCard from &apos;$lib/components/HealthCard.svelte&apos;;
+&lt;/script&gt;
 
-  let name = $state("");
-  let greetMsg = $state("");
-  let statusMsg = $state("");
+&lt;div class=&quot;mb-8&quot;&gt;
+  &lt;h1 class=&quot;text-4xl font-bold text-gray-900 dark:text-white mb-4&quot;&gt;OpenClaw Control Tower&lt;/h1&gt;
+  &lt;p class=&quot;text-xl text-gray-600 dark:text-gray-300&quot;&gt;Live dashboard for agents, sessions, and system health.&lt;/p&gt;
+&lt;/div&gt;
 
-  async function greet(event: Event) {
-    event.preventDefault();
-    greetMsg = await invoke("greet", { name });
-  }
+&lt;div class=&quot;grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8&quot;&gt;
+  &lt;HealthCard title=&quot;Gateway Status&quot; loadFn=&quot;openclaw_status&quot; icon=&quot;🚀&quot; /&gt;
+  &lt;HealthCard title=&quot;Agents List&quot; loadFn=&quot;agents_list&quot; icon=&quot;🤖&quot; /&gt;
+&lt;/div&gt;
 
-  async function getStatus() {
-    statusMsg = await invoke("openclaw_status");
-  }
-</script>
-
-<main>
-  <h1>OpenClaw Control Tower</h1>
-
-  <div class="row">
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo vite" alt="Vite Logo" />
-    </a>
-    <a href="https://tauri.app" target="_blank">
-      <img src="/tauri.svg" class="logo tauri" alt="Tauri Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank">
-      <img src="/svelte.svg" class="logo svelte-kit" alt="SvelteKit Logo" />
-    </a>
-  </div>
-  <p>Click on the Tauri, Vite, and SvelteKit logos to learn more.</p>
-
-  <form class="row" onsubmit={greet}>
-    <input id="greet-input" placeholder="Enter a name..." bind:value={name} />
-    <button type="submit">Greet</button>
-  </form>
-  <p>{greetMsg}</p>
-
-  <button onclick={getStatus} class="mt-4 p-2 bg-blue-500 text-white rounded">Get OpenClaw Status</button>
-  <pre class="mt-4 p-4 bg-gray-100 rounded">{statusMsg}</pre>
-</main>
-
-<style>
-.logo.vite:hover {
-  filter: drop-shadow(0 0 2em #747bff);
-}
-
-.logo.tauri:hover {
-  filter: drop-shadow(0 0 2em #24c8db);
-}
-
-.logo.svelte-kit:hover {
-  filter: drop-shadow(0 0 2em #ff3e00);
-}
-
-.row {
-  display: flex;
-  justify-content: center;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-
-a:hover {
-  color: #535bf2;
-}
-
-h1 {
-  text-align: center;
-}
-
-input,
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  color: #0f0f0f;
-  background-color: #ffffff;
-  transition: border-color 0.25s;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
-}
-
-button {
-  cursor: pointer;
-}
-
-button:hover {
-  border-color: #396cd8;
-}
-button:active {
-  border-color: #396cd8;
-  background-color: #e8e8e8;
-}
-
-input,
-button {
-  outline: none;
-}
-
-#greet-input {
-  margin-right: 5px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: #f6f6f6;
-    background-color: #2f2f2f;
-  }
-
-  a:hover {
-    color: #24c8db;
-  }
-
-  input,
-  button {
-    color: #ffffff;
-    background-color: #0f0f0f98;
-  }
-  button:active {
-    background-color: #0f0f0f69;
-  }
-}
-</style>
+&lt;div class=&quot;grid grid-cols-1 gap-6&quot;&gt;
+  &lt;HealthCard title=&quot;Active Sessions&quot; loadFn=&quot;sessions_list&quot; icon=&quot;📱&quot; /&gt;
+&lt;/div&gt;
