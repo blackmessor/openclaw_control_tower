@@ -1,42 +1,35 @@
 import { Elysia } from 'elysia';
-import { html } from '@elysiajs/html';
 
 const app = new Elysia()
-  .use(html())
   .get('/', () => Bun.file('./public/index.html'))
-  .get('/status', async () => {
+  .get('/status', async ({ set }) => {
+    set.type = 'text/html';
     try {
       const gatewayStatus = await Bun.$`openclaw gateway status --json`.json();
-      return `
-<div>
-  <h2>🩺 Gateway Status</h2>
-  <pre>${JSON.stringify(gatewayStatus, null, 2)}</pre>
-</div>`;
+      return `<div><h2>🩺 Gateway Status</h2><pre>${JSON.stringify(gatewayStatus, null, 2)}</pre></div>`;
     } catch (e) {
       return `<div><h2>❌ Status Error</h2><p>${e.message}</p></div>`;
     }
   })
-  .get('/agents', async ({ query }) => {
+  .get('/agents', async ({ set, query }) => {
+    set.type = 'text/html';
     try {
       const agents = await Bun.$`openclaw agents list --json`.json();
       const page = parseInt(query?.page || '1');
       const limit = parseInt(query?.limit || '20');
       const start = (page - 1) * limit;
       const paginated = agents.slice(start, start + limit);
-      return `
-<div>
-  <h2 class="text-2xl font-bold mb-4">🤖 Agents (page ${page})</h2>
-  <div class="flex gap-2 mb-4">
-    ${page > 1 ? `<a href="/agents?page=${page-1}&limit=${limit}" class="px-3 py-1 bg-blue-500 text-white rounded"> precedent</a>` : ''}
-    <a href="/agents?page=${page+1}&limit=${limit}" class="px-3 py-1 bg-gray-500 text-white rounded"> suivant </a>
-  </div>
-  <pre class="max-h-96 overflow-auto">${JSON.stringify(paginated, null, 2)}</pre>
-</div>`;
+      const totalPages = Math.ceil(agents.length / limit);
+      const prev = page > 1 ? `<a href="/agents?page=${page-1}&limit=${limit}" class="px-3 py-1 bg-blue-500 text-white rounded"> precedent</a>` : '';
+      const next = page < totalPages ? `<a href="/agents?page=${page+1}&limit=${limit}" class="px-3 py-1 bg-gray-500 text-white rounded"> suivant </a>` : '';
+      const html = `<div><h2 class="text-2xl font-bold mb-4">🤖 Agents (page ${page}/${totalPages})</h2><div class="flex gap-2 mb-4">${prev}${next}</div><pre class="max-h-96 overflow-auto">${JSON.stringify(paginated, null, 2)}</pre></div>`;
+      return new Response(html, { headers: { 'content-type': 'text/html' } });
     } catch (e) {
-      return `<div><h2>❌ Agents Error</h2><p>${e.message}</p></div>`;
+      return new Response(`<div><h2>❌ Agents Error</h2><p>${e.message}</p></div>`, { headers: { 'content-type': 'text/html' } });
     }
   })
-  .get('/sessions', async ({ query }) => {
+  .get('/sessions', async ({ set, query }) => {
+    set.type = 'text/html';
     try {
       const sessionsData = await Bun.$`openclaw sessions --all-agents --json`.json();
       const sessions = sessionsData.sessions || [];
@@ -44,29 +37,22 @@ const app = new Elysia()
       const limit = parseInt(query?.limit || '20');
       const start = (page - 1) * limit;
       const paginated = sessions.slice(start, start + limit);
-      return `
-<div>
-  <h2 class="text-2xl font-bold mb-4">📊 Sessions (page ${page})</h2>
-  <div class="flex gap-2 mb-4">
-    ${page > 1 ? `<a href="/sessions?page=${page-1}&limit=${limit}" class="px-3 py-1 bg-blue-500 text-white rounded"> precedent</a>` : ''}
-    <a href="/sessions?page=${page+1}&limit=${limit}" class="px-3 py-1 bg-gray-500 text-white rounded"> suivant </a>
-  </div>
-  <pre class="max-h-96 overflow-auto">${JSON.stringify(paginated, null, 2)}</pre>
-</div>`;
+      const totalPages = Math.ceil(sessions.length / limit);
+      const prev = page > 1 ? `<a href="/sessions?page=${page-1}&limit=${limit}" class="px-3 py-1 bg-blue-500 text-white rounded"> precedent</a>` : '';
+      const next = page < totalPages ? `<a href="/sessions?page=${page+1}&limit=${limit}" class="px-3 py-1 bg-gray-500 text-white rounded"> suivant </a>` : '';
+      const html = `<div><h2 class="text-2xl font-bold mb-4">📊 Sessions (page ${page}/${totalPages})</h2><div class="flex gap-2 mb-4">${prev}${next}</div><pre class="max-h-96 overflow-auto">${JSON.stringify(paginated, null, 2)}</pre></div>`;
+      return new Response(html, { headers: { 'content-type': 'text/html' } });
     } catch (e) {
-      return `<div><h2>❌ Sessions Error</h2><p>${e.message}</p></div>`;
+      return new Response(`<div><h2>❌ Sessions Error</h2><p>${e.message}</p></div>`, { headers: { 'content-type': 'text/html' } });
     }
   })
-  .get('/tasks', async () => {
+  .get('/tasks', async ({ set }) => {
+    set.type = 'text/html';
     try {
       const memory = await Bun.file('/Users/nicolasgodefroy/.openclaw/shared_memory/SHAREDMEMORY.md').text();
-      return `
-<div>
-  <h2>📋 Tasks (SHAREDMEMORY)</h2>
-  <pre>${memory.substring(0, 4000)}...</pre>
-</div>`;
+      return new Response(`<div><h2>📋 Tasks (SHAREDMEMORY)</h2><pre>${memory.substring(0, 4000)}...</pre></div>`, { headers: { 'content-type': 'text/html' } });
     } catch (e) {
-      return `<div><h2>❌ Tasks Error</h2><p>${e.message}</p></div>`;
+      return new Response(`<div><h2>❌ Tasks Error</h2><p>${e.message}</p></div>`, { headers: { 'content-type': 'text/html' } });
     }
   })
   .get('/events', () => new Response(new ReadableStream({
