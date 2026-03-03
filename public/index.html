@@ -1,84 +1,59 @@
 <!DOCTYPE html>
-<html lang="en" :class="{ 'data-theme-dark': darkMode }">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://unpkg.com/htmx.org@2.0.0/dist/htmx.ext.min.js"></script>
-  <script src="https://unpkg.com/htmx.org@2.0.0/dist/ext/sse.js"></script>
-  <script src="https://unpkg.com/alpinejs@3.15.8/dist/cdn.min.js" defer></script>
-  <script src="/app.js" defer></script>
-  <link rel="stylesheet" href="/app.css">
   <title>OpenClaw Control Tower</title>
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+  <script src="https://unpkg.com/alpinejs@3.14.1/dist/cdn.min.js" defer></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { animation: { 'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite' } } }
+    }
+  </script>
 </head>
-<body x-data="{ 
-  darkMode: localStorage.getItem('darkMode') === 'true', 
-  toggleDark() { 
-    this.darkMode = !this.darkMode; 
-    localStorage.setItem('darkMode', this.darkMode); 
-    $el.closest('html').setAttribute('data-theme', this.darkMode ? 'dark' : 'light');
-  },
-  sseConnected: false 
-}">
-  <button 
-    id="dark-toggle" 
-    @click="toggleDark()"
-    x-text="darkMode ? '☀️ Light' : '🌙 Dark'"
-  ></button>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen p-4 md:p-8" x-data="{ dark: localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches), init() { if (this.dark) document.documentElement.classList.add('dark') }, toggle() { this.dark = !this.dark; localStorage.theme = this.dark ? 'dark' : 'light'; document.documentElement.classList.toggle('dark') } }">
+  <header class="mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
+    <h1 class="text-3xl md:text-4xl font-bold">🛡️ OpenClaw Control Tower</h1>
+    <button @click="toggle()" class="p-3 rounded-xl bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition shadow-lg" aria-label="Toggle dark mode">
+      <span x-text="dark ? '☀️' : '🌙'" class="text-xl"></span>
+    </button>
+  </header>
   
-  <div class="sse-status" x-text="sseConnected ? '🟢 Live' : '🟡 Connecting...' " x-init="$watch('sseConnected', val => console.log('SSE:', val))"></div>
-
-  <h1>🛡️ OpenClaw Control Tower</h1>
-  
-  <div class="container">
-    <div id="health" class="card" hx-get="/health" hx-trigger="load" hx-swap="innerHTML">
-      <div class="loading">Loading Health...</div>
+  <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+    <div id="health" hx-get="/health" hx-trigger="load" hx-swap="innerHTML" class="card">
+      <div class="flex items-center justify-center h-64 text-gray-500 dark:text-gray-400">
+        <span class="animate-spin mr-2">⏳</span>Health...
+      </div>
     </div>
-    <div id="agents" class="card" hx-get="/agents" hx-trigger="load" hx-swap="innerHTML">
-      <div class="loading">Loading Agents...</div>
+    <div id="agents" hx-get="/agents" hx-trigger="load" hx-swap="innerHTML" class="card">
+      <div class="flex items-center justify-center h-64 text-gray-500 dark:text-gray-400">
+        <span class="animate-spin mr-2">⏳</span>Agents...
+      </div>
     </div>
-    <div id="sessions" class="card" hx-get="/sessions" hx-trigger="load" hx-swap="innerHTML">
-      <div class="loading">Loading Sessions...</div>
+    <div id="sessions" hx-get="/sessions" hx-trigger="load" hx-swap="innerHTML" class="card">
+      <div class="flex items-center justify-center h-64 text-gray-500 dark:text-gray-400">
+        <span class="animate-spin mr-2">⏳</span>Sessions...
+      </div>
     </div>
-    <div id="tasks" class="card" hx-get="/tasks" hx-trigger="load" hx-swap="innerHTML">
-      <div class="loading">Loading Tasks...</div>
+    <div id="tasks" hx-get="/tasks" hx-trigger="load" hx-swap="innerHTML" class="card">
+      <div class="flex items-center justify-center h-64 text-gray-500 dark:text-gray-400">
+        <span class="animate-spin mr-2">⏳</span>Tasks...
+      </div>
     </div>
   </div>
 
-  <script>
-    document.body.addEventListener('htmx:sseMessageParsed', function(e) {
-      const data = JSON.parse(e.detail.data);
-      if (data.health) {
-        document.getElementById('health').innerHTML = `
-&lt;div class="health-grid"&gt;
-  &lt;h2&gt;🩺 Gateway Health&lt;/h2&gt;
-  &lt;pre&gt;${data.health}&lt;/pre&gt;
-&lt;/div&gt;`;
-      }
-      if (data.agents) {
-        document.getElementById('agents').innerHTML = `
-&lt;div&gt;
-  &lt;h2&gt;🤖 Agents&lt;/h2&gt;
-  &lt;pre&gt;${data.agents}&lt;/pre&gt;
-&lt;/div&gt;`;
-      }
-      if (data.sessions) {
-        document.getElementById('sessions').innerHTML = `
-&lt;div&gt;
-  &lt;h2&gt;📊 Sessions&lt;/h2&gt;
-  &lt;pre&gt;${data.sessions}&lt;/pre&gt;
-&lt;/div&gt;`;
-      }
-      htmx.process(document.body);
-    });
-    
-    // Track SSE connection status
-    let sseCount = 0;
-    document.body.addEventListener('htmx:sseConnect', () => sseCount++);
-    document.body.addEventListener('htmx:sseDisconnect', () => sseCount--);
-    Alpine.store('sse', { connected: () => sseCount > 0 });
-  </script>
-  
-  <!-- SSE connection on body -->
-  <div hx-ext="sse" sse-connect="/events" style="display:none;"></div>
+  <div class="mt-8 p-4 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl border border-blue-400/30">
+    <h3 class="text-xl font-bold mb-2">🚀 Live Updates (SSE)</h3>
+    <p class="text-sm text-gray-600 dark:text-gray-400">Données actualisées automatiquement toutes les 15 secondes</p>
+  </div>
+
+  <div hx-ext="sse" sse-connect="/events" hx-trigger="sseMessage" hx-swap="innerHTML"></div>
+
+  <style>
+    .card { @apply bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 min-h-64 transition-all hover:shadow-2xl hover:-translate-y-1; }
+  </style>
 </body>
 </html>
