@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" :class="{ 'data-theme-dark': darkMode }">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://unpkg.com/htmx.org@2.0.0/dist/htmx.ext.min.js"></script>
+  <script src="https://unpkg.com/htmx.org@2.0.0/dist/ext/sse.js"></script>
+  <script src="https://unpkg.com/alpinejs@3.15.8/dist/cdn.min.js" defer></script>
+  <script src="/app.js" defer></script>
+  <link rel="stylesheet" href="/app.css">
+  <title>OpenClaw Control Tower</title>
+</head>
+<body x-data="{ 
+  darkMode: localStorage.getItem('darkMode') === 'true', 
+  toggleDark() { 
+    this.darkMode = !this.darkMode; 
+    localStorage.setItem('darkMode', this.darkMode); 
+    $el.closest('html').setAttribute('data-theme', this.darkMode ? 'dark' : 'light');
+  },
+  sseConnected: false 
+}">
+  <button 
+    id="dark-toggle" 
+    @click="toggleDark()"
+    x-text="darkMode ? '☀️ Light' : '🌙 Dark'"
+  ></button>
+  
+  <div class="sse-status" x-text="sseConnected ? '🟢 Live' : '🟡 Connecting...' " x-init="$watch('sseConnected', val => console.log('SSE:', val))"></div>
+
+  <h1>🛡️ OpenClaw Control Tower</h1>
+  
+  <div class="container">
+    <div id="health" class="card" hx-get="/health" hx-trigger="load" hx-swap="innerHTML">
+      <div class="loading">Loading Health...</div>
+    </div>
+    <div id="agents" class="card" hx-get="/agents" hx-trigger="load" hx-swap="innerHTML">
+      <div class="loading">Loading Agents...</div>
+    </div>
+    <div id="sessions" class="card" hx-get="/sessions" hx-trigger="load" hx-swap="innerHTML">
+      <div class="loading">Loading Sessions...</div>
+    </div>
+    <div id="tasks" class="card" hx-get="/tasks" hx-trigger="load" hx-swap="innerHTML">
+      <div class="loading">Loading Tasks...</div>
+    </div>
+  </div>
+
+  <script>
+    document.body.addEventListener('htmx:sseMessageParsed', function(e) {
+      const data = JSON.parse(e.detail.data);
+      if (data.health) {
+        document.getElementById('health').innerHTML = `
+&lt;div class="health-grid"&gt;
+  &lt;h2&gt;🩺 Gateway Health&lt;/h2&gt;
+  &lt;pre&gt;${data.health}&lt;/pre&gt;
+&lt;/div&gt;`;
+      }
+      if (data.agents) {
+        document.getElementById('agents').innerHTML = `
+&lt;div&gt;
+  &lt;h2&gt;🤖 Agents&lt;/h2&gt;
+  &lt;pre&gt;${data.agents}&lt;/pre&gt;
+&lt;/div&gt;`;
+      }
+      if (data.sessions) {
+        document.getElementById('sessions').innerHTML = `
+&lt;div&gt;
+  &lt;h2&gt;📊 Sessions&lt;/h2&gt;
+  &lt;pre&gt;${data.sessions}&lt;/pre&gt;
+&lt;/div&gt;`;
+      }
+      htmx.process(document.body);
+    });
+    
+    // Track SSE connection status
+    let sseCount = 0;
+    document.body.addEventListener('htmx:sseConnect', () => sseCount++);
+    document.body.addEventListener('htmx:sseDisconnect', () => sseCount--);
+    Alpine.store('sse', { connected: () => sseCount > 0 });
+  </script>
+  
+  <!-- SSE connection on body -->
+  <div hx-ext="sse" sse-connect="/events" style="display:none;"></div>
+</body>
+</html>
