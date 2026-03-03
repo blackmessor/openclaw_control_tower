@@ -6,6 +6,7 @@
   let data = $state(null as any);
   let error = $state('');
   let loading = $state(true);
+  let retryCount = $state(0);
   let interval: NodeJS.Timeout;
 
   async function loadData() {
