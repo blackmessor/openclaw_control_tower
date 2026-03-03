@@ -1,0 +1,1 @@
+version: '3.8'\nservices:\n  openclaw-control-tower:\n    image: ghcr.io/blackmessor/openclaw_control_tower:latest\n    container_name: openclaw_control_tower\n    ports:\n      - "3000:3000"\n    restart: unless-stopped\n    environment:\n      - NODE_ENV=production
