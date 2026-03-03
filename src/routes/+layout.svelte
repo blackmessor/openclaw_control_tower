@@ -1,1 +1,45 @@
-&lt;script&gt;\n  import '../app.css';\n&lt;/script&gt;\n\n&lt;svelte:head&gt;\n  &lt;title&gt;OpenClaw Control Tower&lt;/title&gt;\n&lt;/svelte:head&gt;\n\n&lt;div class=&quot;flex h-screen bg-gray-100 dark:bg-gray-900&quot;&gt;\n  &lt;!-- Sidebar --&gt;\n  &lt;nav class=&quot;w-72 md:w-64 bg-white dark:bg-gray-800 shadow-lg fixed h-screen sidebar sidebar-large z-50 border-r border-gray-200 dark:border-gray-700 hidden lg:block&quot;&gt;\n    &lt;div class=&quot;p-6&quot;&gt;\n      &lt;h2 class=&quot;text-2xl font-bold text-gray-900 dark:text-white mb-8&quot;&gt;Control Tower&lt;/h2&gt;\n      &lt;ul class=&quot;space-y-4&quot;&gt;\n        &lt;li&gt;&lt;a href=&quot;/&quot; class=&quot;flex items-center py-3 px-4 text-lg text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition&quot;&gt;\n          &lt;span class=&quot;mr-3 text-2xl&quot;&gt;📊&lt;/span&gt;Dashboard&lt;/a&gt;&lt;/li&gt;\n        &lt;li&gt;&lt;a href=&quot;/agents&quot; class=&quot;flex items-center py-3 px-4 text-lg text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition&quot;&gt;\n          &lt;span class=&quot;mr-3 text-2xl&quot;&gt;🤖&lt;/span&gt;Agents&lt;/a&gt;&lt;/li&gt;\n        &lt;li&gt;&lt;a href=&quot;/logs&quot; class=&quot;flex items-center py-3 px-4 text-lg text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition&quot;&gt;\n          &lt;span class=&quot;mr-3 text-2xl&quot;&gt;📜&lt;/span&gt;Logs&lt;/a&gt;&lt;/li&gt;\n        &lt;li&gt;&lt;a href=&quot;/health&quot; class=&quot;flex items-center py-3 px-4 text-lg text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition&quot;&gt;\n          &lt;span class=&quot;mr-3 text-2xl&quot;&gt;❤️&lt;/span&gt;Health&lt;/a&gt;&lt;/li&gt;\n      &lt;/ul&gt;\n    &lt;/div&gt;\n  &lt;/nav&gt;\n  &lt;!-- Overlay for mobile --&gt;\n  &lt;div class=&quot;sidebar-overlay fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden hidden&quot; id=&quot;sidebar-overlay&quot;&gt;&lt;/div&gt;\n  &lt;!-- Main content --&gt;\n  &lt;main class=&quot;flex-1 lg:ml-0 p-8 lg:ml-72 overflow-auto&quot;&gt;\n    &lt;slot /&gt;\n  &lt;/main&gt;\n&lt;/div&gt;\n\n&lt;style&gt;\n  @media (max-width: 1024px) {\n    nav.sidebar-large {\n      transform: translateX(-100%);\n    }\n  }\n  @media (min-width: 1280px) and (max-width: 1440px) {\n    .sidebar {\n      width: 14rem; /* w-56 */\n    }\n  }\n&lt;/style&gt;
+<script>
+  import '../app.css';
+</script>
+
+<svelte:head>
+  <title>OpenClaw Control Tower</title>
+</svelte:head>
+
+<div class="flex h-screen bg-gray-100 dark:bg-gray-900">
+  <!-- Sidebar -->
+  <nav class="w-72 md:w-64 bg-white dark:bg-gray-800 shadow-lg fixed h-screen sidebar sidebar-large z-50 border-r border-gray-200 dark:border-gray-700 hidden lg:block">
+    <div class="p-6">
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-8">Control Tower</h2>
+      <ul class="space-y-4">
+        <li><a href="/" class="flex items-center py-3 px-4 text-lg text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition">
+          <span class="mr-3 text-2xl">📊</span>Dashboard</a></li>
+        <li><a href="/agents" class="flex items-center py-3 px-4 text-lg text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition">
+          <span class="mr-3 text-2xl">🤖</span>Agents</a></li>
+        <li><a href="/logs" class="flex items-center py-3 px-4 text-lg text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition">
+          <span class="mr-3 text-2xl">📜</span>Logs</a></li>
+        <li><a href="/health" class="flex items-center py-3 px-4 text-lg text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition">
+          <span class="mr-3 text-2xl">❤️</span>Health</a></li>
+      </ul>
+    </div>
+  </nav>
+  <!-- Overlay for mobile -->
+  <div class="sidebar-overlay fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden hidden" id="sidebar-overlay"></div>
+  <!-- Main content -->
+  <main class="flex-1 lg:ml-0 p-8 lg:ml-72 overflow-auto">
+    <slot />
+  </main>
+</div>
+
+<style>
+  @media (max-width: 1024px) {
+    nav.sidebar-large {
+      transform: translateX(-100%);
+    }
+  }
+  @media (min-width: 1280px) and (max-width: 1440px) {
+    .sidebar {
+      width: 14rem; /* w-56 */
+    }
+  }
+</style>
