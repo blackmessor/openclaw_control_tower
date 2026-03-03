@@ -12,11 +12,17 @@
   "app": {
     "windows": [
       {
-        "title": "openclaw_control_tower",
-        "width": 800,
-        "height": 600
+        "title": "OpenClaw Control Tower",
+        "width": 1200,
+        "height": 800,
+        "resizable": true
       }
     ],
+    "systemTray": {
+      "iconPath": "icons/32x32.png",
+      "iconAsTemplate": true,
+      "menuOnLeftClick": false
+    },
     "security": {
       "csp": null
     }
