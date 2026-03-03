@@ -3,16 +3,20 @@
 
   let name = $state("");
   let greetMsg = $state("");
+  let statusMsg = $state("");
 
   async function greet(event: Event) {
     event.preventDefault();
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
     greetMsg = await invoke("greet", { name });
+  }
+
+  async function getStatus() {
+    statusMsg = await invoke("openclaw_status");
   }
 </script>
 
-<main class="container">
-  <h1>Welcome to Tauri + Svelte</h1>
+<main>
+  <h1>OpenClaw Control Tower</h1>
 
   <div class="row">
     <a href="https://vite.dev" target="_blank">
@@ -32,6 +36,9 @@
     <button type="submit">Greet</button>
   </form>
   <p>{greetMsg}</p>
+
+  <button onclick={getStatus} class="mt-4 p-2 bg-blue-500 text-white rounded">Get OpenClaw Status</button>
+  <pre class="mt-4 p-4 bg-gray-100 rounded">{statusMsg}</pre>
 </main>
 
 <style>
@@ -39,44 +46,12 @@
   filter: drop-shadow(0 0 2em #747bff);
 }
 
-.logo.svelte-kit:hover {
-  filter: drop-shadow(0 0 2em #ff3e00);
-}
-
-:root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 400;
-
-  color: #0f0f0f;
-  background-color: #f6f6f6;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
-}
-
-.container {
-  margin: 0;
-  padding-top: 10vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: 0.75s;
-}
-
 .logo.tauri:hover {
   filter: drop-shadow(0 0 2em #24c8db);
+}
+
+.logo.svelte-kit:hover {
+  filter: drop-shadow(0 0 2em #ff3e00);
 }
 
 .row {
@@ -152,5 +127,4 @@ button {
     background-color: #0f0f0f69;
   }
 }
-
 </style>
